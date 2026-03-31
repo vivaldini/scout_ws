@@ -2,6 +2,8 @@
 
 This repository provides a ROS 2 Jazzy simulation environment for the Scout Mini mobile robot using Gazebo Harmonic.
 
+![Gazebo environment - Scout Mini - ROS 2 Jazzy](https://github.com/vivaldini/scout_ws/blob/main/Docs/scout_sim.png)
+
 ## Features
 
 - 4-wheel skid-steering robot (DiffDrive plugin)
