@@ -1,0 +1,30 @@
+# ros_gz_bridge configuration for Scout Mini simulation
+# Maps Gazebo internal topics → ROS2 topics
+#
+# Format: gz_topic_name@ros2_msg_type[gz_msg_type
+#   [ = bidirectional   (Gazebo → ROS2 and ROS2 → Gazebo)
+#   ] = unidirectional  (ROS2 → Gazebo only)
+#   [ = unidirectional  (Gazebo → ROS2 only)
+#
+# Author: Milad, AMR Course UFSCar 2025
+
+# ── Clock ──────────────────────────────────────────────────────────────
+/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock
+
+# ── Velocity command (ROS2 → Gazebo) ───────────────────────────────────
+/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist
+
+# ── Odometry (Gazebo → ROS2) ───────────────────────────────────────────
+/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry
+
+# ── TF from odometry (Gazebo → ROS2) ──────────────────────────────────
+/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V
+
+# ── Joint states (Gazebo → ROS2) ──────────────────────────────────────
+/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model
+
+# ── LiDAR scan (Gazebo → ROS2) ────────────────────────────────────────
+/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan
+
+# ── IMU (Gazebo → ROS2) ───────────────────────────────────────────────
+/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU

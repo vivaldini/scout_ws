@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+<!--
+  scout_mini.urdf.xacro
+  =====================
+  Scout Mini URDF model for Gazebo Harmonic + ROS2 Jazzy.
+
+  Drive model: 4-Wheel Skid-Steering via Gazebo Harmonic DiffDrive plugin.
+  The DiffDrive plugin supports multiple joints per side, making it the
+  correct plugin for skid-steering in Gazebo Harmonic (Gazebo Classic's
+  SkidSteerDrive plugin does not exist in Harmonic).
+
+  Sensors:
+    - 2D LiDAR (SICK-style, 360°, 12 m range)
+    - IMU (6-DOF)
+    - Wheel odometry (from DiffDrive plugin)
+
+  Frame tree:
+    world → odom → base_footprint → base_link
+                                 ├── wheel_front_left_link
+                                 ├── wheel_front_right_link
+                                 ├── wheel_rear_left_link
+                                 ├── wheel_rear_right_link
+                                 ├── lidar_link
+                                 └── imu_link
+
+  Authors: Milad (TA), Autonomous Mobile Robots Course, UFSCar 2025
+-->
+
+<robot name="scout_mini" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ═══════════════════ PARAMETERS ═══════════════════════════════════ -->
+  <xacro:property name="mesh_path" value="$(find scout_sim)/meshes"/>
+  <xacro:property name="base_length"   value="0.600"/>  <!-- m -->
+  <xacro:property name="base_width"    value="0.450"/>  <!-- m -->
+  <xacro:property name="base_height"   value="0.175"/>  <!-- m -->
+  <xacro:property name="base_mass"     value="30.0"/>   <!-- kg -->
+  <xacro:property name="base_clearance" value="0.085"/> <!-- ground clearance -->
+
+  <xacro:property name="wheel_radius"  value="0.0875"/> <!-- m -->
+  <xacro:property name="wheel_width"   value="0.055"/>  <!-- m -->
+  <xacro:property name="wheel_mass"    value="1.5"/>    <!-- kg -->
+  <xacro:property name="track_width"   value="0.4671"/> <!-- distance between L and R centres -->
+  <xacro:property name="wheelbase"     value="0.498"/>  <!-- front-to-rear axle distance -->
+
+  <xacro:property name="lidar_height"  value="0.25"/>   <!-- above base_link origin -->
+  <xacro:property name="pi"            value="3.14159265358979"/>
+
+  <!-- ═══════════════════ MACROS ═══════════════════════════════════════ -->
+  <xacro:macro name="box_inertia" params="m l w h">
+    <inertial>
+      <mass value="${m}"/>
+      <inertia
+        ixx="${m*(w*w+h*h)/12}" ixy="0" ixz="0"
+        iyy="${m*(l*l+h*h)/12}" iyz="0"
+        izz="${m*(l*l+w*w)/12}"/>
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="cylinder_inertia" params="m r h">
+    <inertial>
+      <mass value="${m}"/>
+      <inertia
+        ixx="${m*(3*r*r+h*h)/12}" ixy="0" ixz="0"
+        iyy="${m*(3*r*r+h*h)/12}" iyz="0"
+        izz="${m*r*r/2}"/>
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="wheel" params="prefix x_pos y_pos">
+    <link name="wheel_${prefix}_link">
+      <!--<visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="dark_gray">
+          <color rgba="0.2 0.2 0.2 1"/>
+        </material>
+      </visual>-->
+      <visual>
+        <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_path}/wheel.dae" scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <!-- COLlISION (simples) -->
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertia m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+    </link>
+
+    <joint name="wheel_${prefix}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child  link="wheel_${prefix}_link"/>
+      <origin xyz="${x_pos} ${y_pos} ${-base_clearance}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.05" friction="0.1"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- ═══════════════════ BASE LINKS ═══════════════════════════════════ -->
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child  link="base_link"/>
+    <origin xyz="0 0 ${base_clearance + wheel_radius}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 1.5708 "/>
+      <geometry>
+            <mesh filename="${mesh_path}/scout_mini_base_link.dae"
+          scale="1 1 1"/>
+      </geometry>
+    </visual>
+     <!--<visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+      <material name="orange">
+        <color rgba="0.9 0.45 0.1 1"/>
+      </material>
+    </visual> -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+    </collision>
+    <xacro:box_inertia m="${base_mass}" l="${base_length}" w="${base_width}" h="${base_height}"/>
+  </link>
+
+  <!-- ═══════════════════ WHEELS ════════════════════════════════════════ -->
+  <!--  front-left, front-right, rear-left, rear-right                   -->
+  <xacro:wheel prefix="front_left"  x_pos="${wheelbase/2}"  y_pos="${track_width/2}"/>
+  <xacro:wheel prefix="front_right" x_pos="${wheelbase/2}"  y_pos="${-track_width/2}"/>
+  <xacro:wheel prefix="rear_left"   x_pos="${-wheelbase/2}" y_pos="${track_width/2}"/>
+  <xacro:wheel prefix="rear_right"  x_pos="${-wheelbase/2}" y_pos="${-track_width/2}"/>
+
+  <!-- ═══════════════════ LIDAR ════════════════════════════════════════ -->
+  <link name="lidar_link">
+    <visual>
+      <geometry><cylinder radius="0.05" length="0.07"/></geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.05" length="0.07"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.3"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="lidar_link"/>
+    <origin xyz="0.0 0.0 ${base_height/2 + lidar_height}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════ IMU ══════════════════════════════════════════ -->
+  <link name="imu_link">
+    <visual>
+      <geometry><box size="0.04 0.04 0.02"/></geometry>
+      <material name="blue"><color rgba="0.1 0.3 0.8 1"/></material>
+    </visual>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="imu_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════ GAZEBO PLUGINS ═══════════════════════════════ -->
+  <!--
+    DiffDrive plugin — used for 4-wheel skid steering in Gazebo Harmonic.
+    Each side accepts multiple joint names. The plugin computes:
+      v_L = (linear - angular*track/2)
+      v_R = (linear + angular*track/2)
+    and commands all joints on each side identically.
+
+    Topic: /cmd_vel  (geometry_msgs/Twist)  — input
+    Topic: /odom     (nav_msgs/Odometry)    — output
+  -->
+  <gazebo>
+    <plugin filename="libgz-sim-diff-drive-system.so"
+            name="gz::sim::systems::DiffDrive">
+      <!-- Left side: front + rear -->
+      <left_joint>wheel_front_left_joint</left_joint>
+      <left_joint>wheel_rear_left_joint</left_joint>
+      <!-- Right side: front + rear -->
+      <right_joint>wheel_front_right_joint</right_joint>
+      <right_joint>wheel_rear_right_joint</right_joint>
+
+      <wheel_separation>${track_width}</wheel_separation>
+      <wheel_radius>${wheel_radius}</wheel_radius>
+
+      <!-- ROS2 topic names -->
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <tf_topic>tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+
+      <!-- Velocity limits (Scout Mini hardware specs) -->
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <max_angular_acceleration>2.0</max_angular_acceleration>
+    </plugin>
+  </gazebo>
+
+  <!--
+    2D LiDAR sensor (GPU ray, 360° horizontal, 10 Hz)
+    Publishes: /scan (sensor_msgs/LaserScan)
+  -->
+  <gazebo reference="lidar_link">
+    <sensor name="gpu_lidar" type="gpu_lidar">
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <topic>scan</topic>
+      <gz_frame_id>lidar_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>${-pi}</min_angle>
+            <max_angle>${pi}</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>1</samples>
+            <min_angle>0</min_angle>
+            <max_angle>0</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!--
+    IMU sensor (100 Hz)
+    Publishes: /imu/data (sensor_msgs/Imu)
+  -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <update_rate>100</update_rate>
+      <always_on>true</always_on>
+      <topic>imu/data</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <imu>
+        <angular_velocity>
+          <x><noise type="gaussian"><mean>0</mean><stddev>0.009</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0</mean><stddev>0.009</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0</mean><stddev>0.009</stddev></noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian"><mean>0</mean><stddev>0.021</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0</mean><stddev>0.021</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0</mean><stddev>0.021</stddev></noise></z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+  <!-- ROS2 Joint State Publisher plugin -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+    </plugin>
+  </gazebo>
+
+</robot>
