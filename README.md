@@ -34,6 +34,12 @@ sudo apt install ros-jazzy-ros-gz -y
 
 sudo apt update
 sudo apt install ros-jazzy-teleop-twist-keyboard -y
+
+sudo apt update
+sudo apt install ros-jazzy-rosidl-default-generators -y
+
+sudo apt update
+sudo apt install ros-jazzy-ament-lint-auto ros-jazzy-ament-lint-common -y
 ```
 
 ## Installation
