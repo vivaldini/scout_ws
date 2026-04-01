@@ -25,6 +25,15 @@ This repository provides a ROS 2 Jazzy simulation environment for the Scout Mini
 sudo apt update
 sudo apt install build-essential git cmake libasio-dev
 sudo apt install ros-jazzy-ros-gz-bridge
+
+sudo apt update
+sudo apt install ros-jazzy-xacro -y
+
+sudo apt update
+sudo apt install ros-jazzy-ros-gz -y
+
+sudo apt update
+sudo apt install ros-jazzy-teleop-twist-keyboard -y
 ```
 
 ## Installation
