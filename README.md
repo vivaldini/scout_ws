@@ -29,18 +29,16 @@ sudo apt install ros-jazzy-ros-gz-bridge
 
 ## Installation
 
+```bash
+cd ~/
+```
+
 Clone the repository
 
 ```bash
-git clone https://github.com/vivaldini/scout_ros2.git
+git clone https://github.com/vivaldini/scout_ws.git
 ```
 
-Create a ROS 2 workspace and link the package
-
-```bash
-mkdir -p ~/scout_ws/src
-cd ~/scout_ws/src
-```
 
 Build the workspace
 
