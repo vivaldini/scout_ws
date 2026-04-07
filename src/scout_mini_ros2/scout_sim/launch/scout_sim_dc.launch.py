@@ -125,6 +125,7 @@ def generate_launch_description():
             '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
             '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU',
+            '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
         ],
     )
 
