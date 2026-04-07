@@ -44,7 +44,6 @@
   <xacro:property name="wheelbase"      value="0.498"/>    <!-- front-rear axle distance -->
 
   <xacro:property name="lidar_z"        value="0.22"/>     <!-- height above base_link origin -->
-  <xacro:property name="pi"             value="3.14159265358979"/>
 
   <!-- ═══ INERTIA MACROS ════════════════════════════════════════════════ -->
   <xacro:macro name="box_inertia" params="m l w h">
