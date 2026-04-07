@@ -107,7 +107,7 @@ def generate_launch_description():
             '-z', '0.2',   # spawn slightly above ground to avoid collision on start
             '-R', '0.0',
             '-P', '0.0',
-            '-Y', '0.0',
+            '-Y', '3.14',
         ],
     )
 
