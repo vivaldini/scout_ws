@@ -547,7 +547,7 @@
       <pose>-14.072199821472168 -0.011488200165331364 -0.0047772806137800217 0 0 -1.5700000042340219</pose>
       <self_collide>false</self_collide>
     </model>
-    <model name='Apriltag_1'>
+    <!-- <model name='Apriltag_1'>
       <link name='main'>
         <pose>0 0 0 0 0 0</pose>
         <visual name='visual'>
@@ -575,8 +575,8 @@
       <static>true</static>
       <pose>-2.0518100261688232 1.3354519605636597 0.7022705078125 -1.5700000039655511 -3.7065884975033547e-11 -3.1400000000340582</pose>
       <self_collide>false</self_collide>
-    </model>
-    <model name='Apriltag_2'>
+    </model> -->
+    <!-- <model name='Apriltag_2'>
       <link name='main'>
         <pose>0 0 0 0 0 0</pose>
         <visual name='visual'>
@@ -604,8 +604,8 @@
       <static>true</static>
       <pose>-4.1969666481018066 -1.4861538410186768 0.50001835823059082 -1.5700000039655309 -1.0350663468688959e-11 0.001592999950074584</pose>
       <self_collide>false</self_collide>
-    </model>
-    <model name='Apriltag_3'>
+    </model> -->
+    <!-- <model name='Apriltag_3'>
       <link name='main'>
         <pose>0 0 0 0 0 0</pose>
         <visual name='visual'>
@@ -633,8 +633,8 @@
       <static>true</static>
       <pose>-9.9837141036987305 1.4619099998474121 0.50001299381256104 -1.5700000039655511 -3.706601410351229e-11 -3.1400000000340582</pose>
       <self_collide>false</self_collide>
-    </model>
-    <model name='Apriltag_4'>
+    </model> -->
+    <!-- <model name='Apriltag_4'>
       <link name='main'>
         <pose>0 0 0 0 0 0</pose>
         <visual name='visual'>
@@ -662,7 +662,7 @@
       <static>true</static>
       <pose>-7.2007000000000003 -1.3416999999999999 0.70499999999999996 -1.5700000000000001 0 0</pose>
       <self_collide>false</self_collide>
-    </model>
+    </model> -->
     <model name='OrangeDoors'>
       <link name='body'>
         <pose>0 0 0 0 0 0</pose>
