@@ -118,15 +118,10 @@ def generate_launch_description():
         executable='parameter_bridge',
         name='ros_gz_bridge',
         output='screen',
-        arguments=[
-            #'config_file': bridge_config,
-            #'use_sim_time': use_sim_time,
-            '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
-            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-            '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
-            '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU',
-            '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
-        ],
+        parameters=[{
+            'config_file': bridge_config,
+            'use_sim_time': use_sim_time,
+        }],
     )
 
     return LaunchDescription([
