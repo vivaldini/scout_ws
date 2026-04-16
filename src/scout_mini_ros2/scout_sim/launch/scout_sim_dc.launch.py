@@ -1,22 +1,4 @@
 #!/usr/bin/env python3
-"""
-scout_sim.launch.py
-===================
-Launches the Scout Mini simulation in Gazebo Harmonic with full ROS2 integration.
-
-What this launch file does:
-  1. Starts Gazebo Harmonic (gz sim) with scout_world.sdf
-  2. Spawns the Scout Mini robot from URDF/Xacro
-  3. Starts robot_state_publisher (URDF → /tf)
-  4. Starts ros_gz_bridge (Gazebo topics ↔ ROS2 topics)
-
-Usage:
-  ros2 launch scout_sim scout_sim.launch.py
-  ros2 launch scout_sim scout_sim.launch.py use_sim_time:=true
-  ros2 launch scout_sim scout_sim.launch.py headless:=true
-
-Authors: Milad, AMR Course UFSCar 2026
-"""
 
 import os
 from pathlib import Path
@@ -119,14 +101,18 @@ def generate_launch_description():
         name='ros_gz_bridge',
         output='screen',
         arguments=[
-            #'config_file': bridge_config,
-            #'use_sim_time': use_sim_time,
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
             '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+            '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+            '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
             '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
             '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU',
-            '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
         ],
+        parameters=[{
+            'config_file': bridge_config,
+            'use_sim_time': use_sim_time,
+        }],
     )
 
     return LaunchDescription([
