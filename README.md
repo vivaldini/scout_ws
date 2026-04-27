@@ -41,6 +41,16 @@ sudo apt update
 sudo apt install ros-jazzy-ament-lint-auto ros-jazzy-ament-lint-common -y
 ```
 
+### Additional dependencies for Week 7 (SLAM Mapping)
+
+```bash
+sudo apt update
+sudo apt install ros-jazzy-slam-toolbox -y
+
+sudo apt update
+sudo apt install ros-jazzy-nav2-map-server -y
+```
+
 ## Installation
 
 Clone the repository:
@@ -100,6 +110,34 @@ A large maze environment. Used for the Week 6 challenge.
 
 ```bash
 ros2 launch scout_sim scout_sim_maze.launch.py
+```
+
+---
+
+### Week 7 — SLAM Mapping
+
+A maze environment for building an occupancy grid map in real time using `slam_toolbox`. Drive the robot through the maze with the keyboard and watch the map grow in RViz2.
+
+![Week 7 - SLAM](https://github.com/vivaldini/scout_ws/blob/main/Docs/maze_2_world.png)
+
+```bash
+ros2 launch scout_sim scout_sim_maze_2.launch.py
+```
+
+In separate terminals:
+
+```bash
+# SLAM
+ros2 launch scout_sim slam_toolbox.launch.py
+
+# Visualization
+rviz2
+
+# Drive the robot
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+# Save the map (when done)
+ros2 run nav2_map_server map_saver_cli -f ~/scout_ws/maze_class7_map
 ```
 
 ---
