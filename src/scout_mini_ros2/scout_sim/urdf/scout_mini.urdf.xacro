@@ -206,10 +206,11 @@
       <wheel_separation>${track_width}</wheel_separation>
       <wheel_radius>${wheel_radius}</wheel_radius>
 
-      <!-- ROS2 topic names -->
-      <topic>cmd_vel</topic>
-      <odom_topic>odom</odom_topic>
-      <tf_topic>tf</tf_topic>
+      <!-- ROS2 topic names — leading slash = publish to global Gazebo topic,
+           matching what ros_gz_bridge bridges from /tf → ROS /tf -->
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
       <frame_id>odom</frame_id>
       <child_frame_id>base_footprint</child_frame_id>
 
@@ -229,6 +230,7 @@
       <always_on>true</always_on>
       <visualize>true</visualize>
       <topic>scan</topic>
+      <gz_frame_id>lidar_link</gz_frame_id>
       <lidar>
         <scan>
           <horizontal>
