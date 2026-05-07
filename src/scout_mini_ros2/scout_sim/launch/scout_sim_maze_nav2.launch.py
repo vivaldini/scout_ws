@@ -23,6 +23,7 @@ from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     IncludeLaunchDescription,
+    SetEnvironmentVariable,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -36,11 +37,6 @@ def generate_launch_description():
     nav2_params_default = os.path.join(pkg_scout_sim, 'config', 'nav2_params.yaml')
 
     # ── Launch arguments ────────────────────────────────────────────────
-    map_arg = DeclareLaunchArgument(
-        'map',
-        default_value=map_file_default,
-        description='Full path to the .yaml map file to load')
-
     params_arg = DeclareLaunchArgument(
         'params_file',
         default_value=nav2_params_default,
@@ -50,6 +46,10 @@ def generate_launch_description():
         'use_sim_time',
         default_value='true',
         description='Use simulation (Gazebo) clock')
+
+    isolate_ros_graph = SetEnvironmentVariable(
+        name='ROS_AUTOMATIC_DISCOVERY_RANGE',
+        value='LOCALHOST')
 
     # ── 1. Simulation: Gazebo + Scout Mini + bridge ────────────────────
     sim_launch = IncludeLaunchDescription(
@@ -64,14 +64,15 @@ def generate_launch_description():
             os.path.join(pkg_nav2_bringup, 'launch', 'bringup_launch.py')
         ),
         launch_arguments={
-            'map':          LaunchConfiguration('map'),
+            'map':          map_file_default,
             'use_sim_time': LaunchConfiguration('use_sim_time'),
             'params_file':  LaunchConfiguration('params_file'),
+            'use_composition': 'False',
         }.items(),
     )
 
     return LaunchDescription([
-        map_arg,
+        isolate_ros_graph,
         params_arg,
         use_sim_time_arg,
 

@@ -73,6 +73,26 @@ def generate_launch_description():
         }],
     )
 
+    # Publish zero-position wheel joints so RViz can render all visual links.
+    # Gazebo still owns the simulated wheel motion; we intentionally do not
+    # bridge /joint_states from Gazebo because its timestamps can reset TF.
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'rate': 10,
+            'zeros': {
+                'wheel_front_left_joint': 0.0,
+                'wheel_front_right_joint': 0.0,
+                'wheel_rear_left_joint': 0.0,
+                'wheel_rear_right_joint': 0.0,
+            },
+        }],
+    )
+
     # ── Spawn robot in Gazebo ───────────────────────────────────────────
     # Using '-string' (pre-processed URDF) instead of '-topic' to avoid
     # a QoS mismatch: robot_state_publisher uses transient_local durability
@@ -118,6 +138,7 @@ def generate_launch_description():
 
         gz_sim_launch,
         robot_state_publisher,
+        joint_state_publisher,
         spawn_robot,
         ros_gz_bridge,
     ])

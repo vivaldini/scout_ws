@@ -99,20 +99,12 @@ def generate_launch_description():
 
     # ── ROS–Gazebo bridge ───────────────────────────────────────────────
     # Bridges Gazebo topics to ROS2 and vice versa using the config YAML.
+    # Keep all topic mappings in the YAML only so topics are not bridged twice.
     ros_gz_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         name='ros_gz_bridge',
         output='screen',
-        arguments=[
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
-            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-            '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
-            '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
-            '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU',
-        ],
         parameters=[{
             'config_file': bridge_config,
             'use_sim_time': use_sim_time,
